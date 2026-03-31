@@ -4,7 +4,8 @@ Host: localhost:9999
 Content-Type: application/json
 
 {
-    "email": "1@gmail.com",
+    "name" : "ghifar",
+    "email": "ghifar@gmail.com",
     "password": "hsadfa"
 }
 
@@ -29,3 +30,29 @@ Content-Type: application/json
 ### DELETE USER
 DELETE  /users/1 HTTP/1.1
 Host: localhost:9999
+
+
+###================================================= AUTH
+
+### REGISTER
+POST  /auth/register HTTP/1.1
+Host: localhost:9999
+Content-Type: application/json
+
+{
+    "name": "ghifar",
+    "email": "gifar1@gmail.com",
+    "password": "1234"
+}
+
+
+### LOGIN
+
+POST  /auth/login HTTP/1.1
+Host: localhost:9999
+Content-Type: application/json
+
+{
+    "email": "gifar1@gmail.com",
+    "password": "1234"
+}
