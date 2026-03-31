@@ -5,21 +5,21 @@ export async function getUserByid(id){
      SELECT 
          name, 
          email, 
-         password, 
-         FROM users WHRE email = $1`,
-         [data.email]
+         password
+         FROM users WHERE id = $1`,
+         [id]
      )
     return result.rows[0]
 }
 
-export async function getuserbyEmail(data){
+export async function getuserbyEmail(email){
     const result = await pool.query(`
         SELECT 
             name, 
             email, 
-            password, 
-            FROM users WHRE email = $1`,
-            [data.email]
+            password
+            FROM users WHERE email = $1`,
+            [email]
         )
     return result.rows[0]
 }
