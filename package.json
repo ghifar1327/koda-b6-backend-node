@@ -7,10 +7,11 @@
   "type": "module",
   "main": "src/main.js",
   "scripts": {
-  "dev": "node --watch src/main.js",
-  "start": "node src/main.js"
+    "dev": "node --watch src/main.js",
+    "start": "node src/main.js"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "pg": "^8.20.0"
   }
 }
