@@ -1,5 +1,5 @@
-import * as userModels from "../models/users.model.js"
-import {constants} from "node:http2"
+import * as userModels from "../models/users.model.js";
+import {constants} from "node:http2";
 
 
 /**
@@ -31,21 +31,21 @@ export async function register(req, res) {
  */
 export async function login(req, res) {
     try{
-        const {email , password} = req.body
-        const user = await userModels.getuserbyEmail(email)
+        const {email , password} = req.body;
+        const user = await userModels.getuserbyEmail(email);
 
         if (!user) {
         throw new Error("User not found");
         }
         
         if (password !== user.password) {
-          throw new Error("Wrong email or password")
+          throw new Error("Wrong email or password");
         }
 
        const result = {
          name: user.name,
          email: user.email
-       }
+       };
        res.json({
          success: true,
          message: "Login success",

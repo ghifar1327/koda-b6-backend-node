@@ -8,8 +8,8 @@ export async function getUserByid(id){
          password
          FROM users WHERE id = $1`,
          [id]
-     )
-    return result.rows[0]
+     );
+    return result.rows[0];
 }
 
 export async function getuserbyEmail(email){
@@ -20,13 +20,13 @@ export async function getuserbyEmail(email){
             password
             FROM users WHERE email = $1`,
             [email]
-        )
-    return result.rows[0]
+        );
+    return result.rows[0];
 }
 
 export async function getAllUsers(){
     const {rows:data} = await pool.query("SELECT name, email, password FROM users");
-return data
+return data;
 }
 
 export async function createUser(data){

@@ -1,4 +1,4 @@
-import * as  userModels from "../models/users.model.js"
+import * as  userModels from "../models/users.model.js";
 
 
 
@@ -7,8 +7,8 @@ import * as  userModels from "../models/users.model.js"
  * @param {import("express").Response} res
 */
 export async function createUser(req, res) {
-    const data = req.body
-    const newUser = await userModels.createUser(data)   
+    const data = req.body;
+    const newUser = await userModels.createUser(data);   
     res.json({
         success: true,
         message: "data of user",
@@ -21,12 +21,12 @@ export async function createUser(req, res) {
  * @param {import("express").Response} res
 */
 export async function getAllUser(req,res) {
-    const users = await userModels.getAllUsers()
+    const users = await userModels.getAllUsers();
     res.json({
         success: true,
         message: "list of users",
         result: users
-    })
+    });
 }
 
 
@@ -36,7 +36,7 @@ export async function getUserById(req, res) {
         const id = parseInt(req.params.id);
         const user = await userModels.getUserByid(id);
         
-        if (!user) throw new Error("User not found" )
+        if (!user) throw new Error("User not found" );
 
         res.json({
             success: true,
@@ -52,7 +52,7 @@ export async function UpdateUser(req, res) {
     try {
       const id = parseInt(req.params.id);
       const user = userModels.updateUser(id, req.body);
-      if (!user) throw new Error("User not found" )
+      if (!user) throw new Error("User not found" );
       
         res.status(200).json({
           success: true,
@@ -67,7 +67,7 @@ export async function UpdateUser(req, res) {
 export async function deleteUser(req, res) {
     try{
       const id = parseInt(req.params.id);
-      const user = userModels.deleteUser(id)
+      const user = userModels.deleteUser(id);
         res.status(200).json({
         success: true,
         message: "deleted successfuly",

@@ -9,8 +9,8 @@ export const pool = new Pool({
   port: process.env.PGPORT
 });
 async function db() {
-    const client = await pool.connect()
-    return client
+    const client = await pool.connect();
+    return client;
 }
 
-export default db
+export default db;
