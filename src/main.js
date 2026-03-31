@@ -1,5 +1,9 @@
+import "dotenv/config";
 import express from "express"
 import userRouter from "./routes/users.router.js"
+import db from "./lib/db.js";
+
+export const conn = db()
 const app = express()
 
 app.use(express.json())
