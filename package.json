@@ -1,0 +1,16 @@
+{
+  "name": "js_backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+  "dev": "node --watch src/main.js",
+  "start": "node src/main.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
