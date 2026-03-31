@@ -1,43 +1,60 @@
-export const userData = []
-let idCounter = 1;
+import { pool } from "../lib/db.js";
 
-export function getUserByid(id){
-    return userData.find(user => user.id === id)
+export async function getUserByid(id){
+    const result = await pool.query(`
+     SELECT 
+         name, 
+         email, 
+         password, 
+         FROM users WHRE email = $1`,
+         [data.email]
+     )
+    return result.rows[0]
 }
 
-export function getAllUsers(){
-    return userData
+export async function getuserbyEmail(data){
+    const result = await pool.query(`
+        SELECT 
+            name, 
+            email, 
+            password, 
+            FROM users WHRE email = $1`,
+            [data.email]
+        )
+    return result.rows[0]
 }
 
-export function createUser(data){
-    const newUser = {
-        id : idCounter ++,
-        name : data.name,
-        email: data.email,
-        password: data.password
-    }
-
-    userData.push(newUser)
-    return data
+export async function getAllUsers(){
+    const {rows:data} = await pool.query("SELECT name, email, password FROM users");
+return data
 }
 
-export function updateUser(id, data){
-    const index = userData.findIndex(user => user.id === id)
-    if (index !== -1){
-        userData[index] = {
-            ...data, id
-        }
-    }
-    return userData[index]
+export async function createUser(data){
+  const result = await pool.query(
+    `INSERT INTO users (name, email, password)
+     VALUES ($1, $2, $3)
+     RETURNING id, name, email, password`,
+    [data.name, data.email, data.password]
+  );
+  return result.rows[0];
+}
+
+export async function updateUser(id, data){
+    const result = await pool.query(
+    `UPDATE users 
+     SET name = $1, email = $2, password = $3
+     WHERE id = $4
+     RETURNING id, name, email, password`,
+    [data.name, data.email, data.password, id]
+  );
+  return result.rows[0];
 }
 
 
-export function deleteUser(id){
-    const index = userData.findIndex(user => user.id === id)
-    const user = {}
-    if (index !== -1){
-        user = userData[index]
-        delete userData[index]
-    }
-    return user
+export async function deleteUser(id){
+  const result = await pool.query(
+    "DELETE FROM users WHERE id = $1 RETURNING id, name, email",
+    [id]
+  );
+  return result.rows[0];
 }
