@@ -1,34 +1,45 @@
+GET  / HTTP/1.1
+Host: localhost:9999
+
 ### CREATE
-POST /users HTTP/1.1
+POST /admin/users HTTP/1.1
 Host: localhost:9999
 Content-Type: application/json
 
 {
-    "name" : "ghifar",
-    "email": "ghifar@gmail.com",
-    "password": "hsadfa"
+    "full_name" : "createuser",
+    "email": "createuser@gmail.com",
+    "password": "1234A",
+    "address": "depok",
+    "phone": "085591710309",
+    "role_id": 1
 }
 
 ### GET ALL USERS
-GET /users HTTP/1.1
+GET /admin/users HTTP/1.1
 Host: localhost:9999
 
-### GET ALL USERS BY ID
-GET /users/2 HTTP/1.1
+### GET USERS BY ID
+GET /admin/users/4438caad-f7c7-416f-b911-887e2f32cd5c HTTP/1.1
 Host: localhost:9999
 
 ### UPDATE USER
-PATCH /users/1 HTTP/1.1
+PATCH /admin/users/9be27fd9-ff3c-424e-a20c-f53353caaa5b HTTP/1.1
 Host: localhost:9999
 Content-Type: application/json
 
 {
+    "picture" : "gambar.png",
+    "full_name" : "berubah",
     "email": "berubah@gmail.com",
-    "password": "berubah"
+    "password": "1234A",
+    "address": "depok",
+    "phone": "085591710309",
+    "role_id": 1
 }
 
 ### DELETE USER
-DELETE  /users/1 HTTP/1.1
+DELETE  /admin/users/4438caad-f7c7-416f-b911-887e2f32cd5c HTTP/1.1
 Host: localhost:9999
 
 
@@ -40,9 +51,11 @@ Host: localhost:9999
 Content-Type: application/json
 
 {
-    "name": "ghifar",
-    "email": "gifar1@gmail.com",
-    "password": "1234"
+    "full_name" : "ghifar",
+    "email": "ghifar@gmail.com",
+    "password": "1234A",
+    "address": "jawa",
+    "phone": "085591710309"
 }
 
 
@@ -53,6 +66,6 @@ Host: localhost:9999
 Content-Type: application/json
 
 {
-    "email": "gifar1@gmail.com",
-    "password": "1234"
+    "email": "ghifar@gmail.com",
+    "password": "1234A"
 }
