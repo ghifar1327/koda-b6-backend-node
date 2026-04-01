@@ -13,7 +13,8 @@ export async function getUserByid(id){
     			phone, 
     			address, 
     			created_at, 
-    			updated_at FROM users WHERE id = $1;`,
+    			updated_at FROM users WHERE id = $1
+          RETURNING id, full_name, email, created_at;`,
          [id]
      );
     return result.rows[0];
@@ -79,7 +80,7 @@ export async function createUser(data){
           role_id=$7,
           updated_at=$8 
         WHERE id=$9
-        RETURNING `,
+        RETURNING id, full_name, email, updated_at`,
       [data.picture, data.full_name, data.email, data.password, data.address, data.phone, data.role_id, new Date(), id]
     );
     return result.rows[0];
