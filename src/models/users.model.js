@@ -3,6 +3,7 @@ import { pool } from "../lib/db.js";
 export async function getUserByid(id){
     const result = await pool.query(`
      SELECT 
+         id,
          name, 
          email, 
          password
@@ -15,6 +16,7 @@ export async function getUserByid(id){
 export async function getuserbyEmail(email){
     const result = await pool.query(`
         SELECT 
+            id,
             name, 
             email, 
             password
