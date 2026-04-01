@@ -46,7 +46,7 @@ export async function getAllUser(req,res) {
 export async function getUserById(req, res) {
     try{
 
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
         const user = await userModels.getUserByid(id);
         
         if (!user) throw new Error("User not found" );
@@ -63,7 +63,7 @@ export async function getUserById(req, res) {
 
 export async function UpdateUser(req, res) {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const user = userModels.updateUser(id, req.body);
       if (!user) throw new Error("User not found" );
       
@@ -79,7 +79,7 @@ export async function UpdateUser(req, res) {
 
 export async function deleteUser(req, res) {
     try{
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const user = userModels.deleteUser(id);
         res.status(200).json({
         success: true,
