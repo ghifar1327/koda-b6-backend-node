@@ -1,6 +1,7 @@
 import * as userModels from "../models/users.model.js";
 import {constants} from "node:http2";
 import { GenerateToken } from "../lib/jwt.js";
+import { GenerateHash, VerifyHash } from "../lib/hash.js";
 
 /**
  * @param {import("express").Request} req
@@ -9,7 +10,11 @@ import { GenerateToken } from "../lib/jwt.js";
 export async function register(req, res) {
 
     try {
-        const user = await userModels.createUser(req.body);
+        const {password } = req.body;
+        const hash = await GenerateHash(password);
+        const reqData = { ...req.body, password: hash };
+        console.log(reqData);
+        const user = await userModels.createUser(reqData);
         res.status(constants.HTTP_STATUS_CREATED).json({
             success: true,
             message: "register success",
@@ -39,8 +44,10 @@ export async function login(req, res) {
         throw new Error("User not found");
         }
         
-        if (password !== user.password) {
-          throw new Error("Wrong email or password");
+        const isValid = VerifyHash(user.password, password);
+        
+        if (!isValid) {
+          throw new Error("Wrong password");
         }
         const token = GenerateToken(user);
 
