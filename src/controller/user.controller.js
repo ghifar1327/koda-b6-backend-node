@@ -1,5 +1,6 @@
+import { GenerateHash } from "../lib/hash.js";
 import * as  userModels from "../models/users.model.js";
-
+import {constants} from "http2";
 
 
 /**
@@ -7,13 +8,25 @@ import * as  userModels from "../models/users.model.js";
  * @param {import("express").Response} res
 */
 export async function createUser(req, res) {
-    const data = req.body;
-    const newUser = await userModels.createUser(data);   
-    res.json({
-        success: true,
-        message: "data of user",
-        resust: newUser
-    });
+
+    try {
+        const {password } = req.body;
+        const hash = await GenerateHash(password);
+        const reqData = { ...req.body, password: hash };
+        console.log(reqData);
+        const user = await userModels.createUser(reqData);
+        res.status(constants.HTTP_STATUS_CREATED).json({
+            success: true,
+            message: "register success",
+            result: user,
+        });
+    } catch (error) {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).json({
+            success: false,
+            message: "failed to register",
+            error: error.message,
+        });
+    }
 }
 
 /**
