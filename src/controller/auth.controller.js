@@ -1,4 +1,5 @@
 import * as userModels from "../models/users.model.js";
+import * as authModels from "../models/auth.models.js";
 import {constants} from "node:http2";
 import { GenerateToken } from "../lib/jwt.js";
 import { GenerateHash, VerifyHash } from "../lib/hash.js";
@@ -111,4 +112,38 @@ export async function login(req, res) {
       message: err.message
     });
     }
+}
+
+
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export async function forgotPwd(req, res) {
+  try{
+    const {email}= req.body;
+    const user = await userModels.getuserbyEmail(email);
+    if(!user){
+      return res.status(constants.HTTP_STATUS_NOT_FOUND).json({
+        success: false, 
+        message: "email not registed"
+      });
+    }
+    // delete data lama untuk create ulang
+    await authModels.deleteForgotPwd(email);
+    
+    const data = await authModels.createForgotPwd(email);
+    console.log("OTP:", data.code,", email:", email);
+    return res.json({
+            success: true,
+            message: "OTP sent",
+            otp: data.code
+      });
+
+  }catch(err){
+    return res.status(500).json({
+            success: false,
+            message: err.message
+    });
+  }
 }
