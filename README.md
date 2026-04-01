@@ -40,7 +40,7 @@ src/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/VirgilIw/koda-b6-backend-node.git
+git clone https://github.com/ghifar1327/koda-b6-backend-node.git
 cd koda-b6-backend-node
 ```
 
