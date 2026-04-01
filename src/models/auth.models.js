@@ -16,7 +16,6 @@ export async function getForgotPwdByEmail(email) {
 		email,
 		code
 		FROM forgot_password WHERE email=$1
-        RETURNING email, code;
         `,
         [email]        
     );
@@ -28,4 +27,12 @@ export async function deleteForgotPwd(email) {
         DELETE FROM forgot_password WHERE email=$1`, 
         [email]
     );
+}
+
+export async function updatePassword(email, pwd) {
+    const result = await pool.query(
+        "UPDATE users SET password = $1 WHERE email = $2;",
+        [pwd ,email]
+    );
+    return result.rows[0];
 }
