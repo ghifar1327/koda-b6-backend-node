@@ -67,18 +67,30 @@ export async function register(req, res) {
 export async function login(req, res) {
     try{
         const {email , password} = req.body;
+        if (!email || !password) {
+          return res.status(400).json({
+            success: false,
+            message: "Email and password are required"
+          });
+        }
+        
         const user = await userModels.getuserbyEmail(email);
 
-        console.log(user);
         if (!user) {
-        throw new Error("User not found");
-        }
+           return res.status(constants.HTTP_STATUS_UNAUTHORIZED).json({
+             success: false,
+             message: "Invalid email or password"
+           });
+         }
         
-        const isValid = VerifyHash(user.password, password);
+        const isValid = await VerifyHash(user.password, password);
         
-        if (!isValid) {
-          throw new Error("Wrong password");
-        }
+          if (!isValid) {
+            return res.status(constants.HTTP_STATUS_UNAUTHORIZED).json({
+              success: false,
+              message: "Invalid email or password"
+            });
+          }
         const token = GenerateToken(user);
 
     //    const result = {
@@ -89,12 +101,12 @@ export async function login(req, res) {
        res.status(constants.HTTP_STATUS_OK).json({
          success: true,
          message: "Login success",
-         token : token
+         token
     });
 
 
     }catch(err){
-      res.status(constants.HTTP_STATUS_UNAUTHORIZED).json({
+      res.status(500).json({
       success: false,
       message: err.message
     });
