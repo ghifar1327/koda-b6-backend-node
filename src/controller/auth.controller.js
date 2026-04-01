@@ -1,6 +1,6 @@
 import * as userModels from "../models/users.model.js";
 import {constants} from "node:http2";
-
+import { GenerateToken } from "../lib/jwt.js";
 
 /**
  * @param {import("express").Request} req
@@ -34,6 +34,7 @@ export async function login(req, res) {
         const {email , password} = req.body;
         const user = await userModels.getuserbyEmail(email);
 
+        console.log(user);
         if (!user) {
         throw new Error("User not found");
         }
@@ -41,15 +42,17 @@ export async function login(req, res) {
         if (password !== user.password) {
           throw new Error("Wrong email or password");
         }
+        const token = GenerateToken(user);
 
-       const result = {
-         name: user.name,
-         email: user.email
-       };
+    //    const result = {
+    //      name: user.name,
+    //      email: user.email
+         
+    //    };
        res.json({
          success: true,
          message: "Login success",
-         results : result
+         token : token
     });
 
 
