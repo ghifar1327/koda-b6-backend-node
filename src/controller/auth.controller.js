@@ -147,3 +147,43 @@ export async function forgotPwd(req, res) {
     });
   }
 }
+
+
+export async function resetPassword(req, res) {
+    try {
+        const { email, code, new_password } = req.body;
+
+        const data = await authModels.getForgotPwdByEmail(email);
+
+        if (!data) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP not found"
+            });
+        }
+
+        if (data.code !== code) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP"
+            });
+        }
+
+        const hash = await GenerateHash(new_password);
+
+        await authModels.updatePassword(email, hash);
+
+        await authModels.deleteForgotPwd(email);
+
+        return res.json({
+            success: true,
+            message: "Password updated successfully"
+        });
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+}
