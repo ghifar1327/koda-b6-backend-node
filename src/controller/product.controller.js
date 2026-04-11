@@ -1,9 +1,20 @@
 import * as productmodels from "../models/product.models.js";
+import { getCache, setCache, deleteCache, clearCachePattern } from "../lib/redis.js";
 
+const CACHE_TTL = 3600; // 1 hour
+const PRODUCTS_CACHE_KEY = "products:all";
+const PRODUCT_CACHE_KEY_PREFIX = "product:";
+const VARIANTS_CACHE_KEY_PREFIX = "product:variants:";
+const SIZES_CACHE_KEY_PREFIX = "product:sizes:";
 
 export async function getAllProducts(req, res) {
   try {
-    const products = await productmodels.getAllProducts();
+    let products = await getCache(PRODUCTS_CACHE_KEY);
+    
+    if (!products) {
+      products = await productmodels.getAllProducts();
+      await setCache(PRODUCTS_CACHE_KEY, products, CACHE_TTL);
+    }
 
     res.status(200).json({
       success: true,
@@ -23,8 +34,17 @@ export async function getAllProducts(req, res) {
 export async function getProductById(req, res) {
   try {
     const { id } = req.params;
+    const cacheKey = `${PRODUCT_CACHE_KEY_PREFIX}${id}`;
 
-    const product = await productmodels.getProductById(id);
+    let product = await getCache(cacheKey);
+    
+    if (!product) {
+      product = await productmodels.getProductById(id);
+      
+      if (product) {
+        await setCache(cacheKey, product, CACHE_TTL);
+      }
+    }
 
     if (!product) {
       return res.status(404).json({
@@ -51,6 +71,8 @@ export async function getProductById(req, res) {
 export async function createProduct(req, res) {
   try {
     const product = await productmodels.createProduct(req.body);
+
+    await deleteCache(PRODUCTS_CACHE_KEY);
 
     res.status(201).json({
       success: true,
@@ -80,6 +102,11 @@ export async function updateProduct(req, res) {
       });
     }
 
+    await deleteCache(`${PRODUCT_CACHE_KEY_PREFIX}${id}`);
+    await deleteCache(PRODUCTS_CACHE_KEY);
+    await deleteCache(`${VARIANTS_CACHE_KEY_PREFIX}${id}`);
+    await deleteCache(`${SIZES_CACHE_KEY_PREFIX}${id}`);
+
     res.status(200).json({
       success: true,
       message: "Product updated successfully",
@@ -108,6 +135,11 @@ export async function deleteProduct(req, res) {
       });
     }
 
+    await deleteCache(`${PRODUCT_CACHE_KEY_PREFIX}${id}`);
+    await deleteCache(PRODUCTS_CACHE_KEY);
+    await deleteCache(`${VARIANTS_CACHE_KEY_PREFIX}${id}`);
+    await deleteCache(`${SIZES_CACHE_KEY_PREFIX}${id}`);
+
     res.status(200).json({
       success: true,
       message: "Product deleted successfully",
@@ -126,8 +158,14 @@ export async function deleteProduct(req, res) {
 export async function getVariantsByProductId(req, res) {
   try {
     const { id } = req.params;
+    const cacheKey = `${VARIANTS_CACHE_KEY_PREFIX}${id}`;
 
-    const variants = await productmodels.getVariantsByProductId(id);
+    let variants = await getCache(cacheKey);
+    
+    if (!variants) {
+      variants = await productmodels.getVariantsByProductId(id);
+      await setCache(cacheKey, variants, CACHE_TTL);
+    }
 
     res.status(200).json({
       success: true,
@@ -147,8 +185,14 @@ export async function getVariantsByProductId(req, res) {
 export async function getSizesByProductId(req, res) {
   try {
     const { id } = req.params;
+    const cacheKey = `${SIZES_CACHE_KEY_PREFIX}${id}`;
 
-    const sizes = await productmodels.getSizesByProductId(id);
+    let sizes = await getCache(cacheKey);
+    
+    if (!sizes) {
+      sizes = await productmodels.getSizesByProductId(id);
+      await setCache(cacheKey, sizes, CACHE_TTL);
+    }
 
     res.status(200).json({
       success: true,
