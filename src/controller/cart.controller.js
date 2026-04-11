@@ -65,11 +65,11 @@ export async function addToCart(req, res) {
  * @param {import("express").Request} req
  * @param {import("express").Response} res
  */
-export async function getCartByUser(req, res) {
+export async function getCartByIdUser(req, res) {
   try {
     const { user_id } = req.params;
 
-    const result = await cartModel.getCartByUser(user_id);
+    const result = await cartModel.getCartByIdUser(user_id);
 
     res.status(200).json({
       success: true,
