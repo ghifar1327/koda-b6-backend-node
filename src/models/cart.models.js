@@ -64,9 +64,9 @@ export async function updateCartQuantity(id, quantity) {
 /**
  * @param {string} user_id
  */
-export async function getCartByUser(user_id) {
+export async function getCartByIdUser(user_id) {
   const query = `
-    SELECT id, user_id, product_id, size_id, variant_id, quantity
+    SELECT id, product_id, size_id, variant_id, quantity
     FROM cart
     WHERE user_id = $1
     ORDER BY id ASC
