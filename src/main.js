@@ -3,6 +3,7 @@ import express from "express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import db from "./lib/db.js";
+import { initRedis } from "./lib/redis.js";
 import adminRouter from "./routes/admin.router.js";
 import authRouter from "./routes/auth.router.js";
 import cartRouter from "./routes/cart.router.js";
@@ -58,7 +59,16 @@ app.get("/", function(req, res){
     });
 });
 
-app.listen(9999, function(){
+app.listen(9999, async function(){
     console.log("App listening on port 9999");
     console.log("Swagger docs available at http://localhost:9999/api-docs");
+    
+    // Initialize Redis
+    try {
+        await initRedis();
+        console.log("Redis cache initialized successfully");
+    } catch (error) {
+        console.warn("Redis cache failed to initialize:", error.message);
+        console.warn("Application will continue without caching");
+    }
 });
