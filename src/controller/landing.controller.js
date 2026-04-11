@@ -1,4 +1,4 @@
-import * as landingModel from "../models/landing.model.js";
+import * as landingModel from "../models/landing.models.js";
 
 /**
  * Get all review products (landing)
