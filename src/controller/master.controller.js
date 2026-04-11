@@ -1,4 +1,4 @@
-import * as masterModel from "../models/master.model.js";
+import * as masterModel from "../models/master.models.js";
 
 const ALLOWED_TABLES = ["sizes", "variants", "methods"];
 
