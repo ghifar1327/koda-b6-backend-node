@@ -67,6 +67,10 @@ DB_USERNAME=
 DB_PASSWORD=
 DB_NAME=
 DB_SSLMODE=
+
+# Redis Configuration (Optional, for product caching)
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
 | Variable      | Description                          |
@@ -78,6 +82,8 @@ DB_SSLMODE=
 | `DB_PASSWORD` | PostgreSQL password                  |
 | `DB_NAME`     | PostgreSQL database name             |
 | `DB_SSLMODE`  | SSL mode (`disable` / `require`)     |
+| `REDIS_HOST`  | Redis server host (default: `localhost`) |
+| `REDIS_PORT`  | Redis server port (default: `6379`)  |
 
 ### 4. Run the server
 
@@ -109,6 +115,66 @@ npm start
 | `/auth`   | `auth.router.js`     | Authentication    |
 | `/users`  | `users.router.js`    | User management   |
 | `/admin`  | `admin.router.js`    | Admin operations  |
+
+---
+
+## Caching (Redis)
+
+Redis caching is implemented for the **Product** endpoints to improve performance.
+
+### Features
+
+- **Automatic caching** of product queries with 1-hour TTL (Time To Live)
+- **Cache invalidation** on CREATE, UPDATE, and DELETE operations
+- **Fallback mode**: Application continues to work without Redis if it's unavailable
+- **Cache keys**:
+  - `products:all` - All products list
+  - `product:{id}` - Individual product
+  - `product:variants:{id}` - Product variants
+  - `product:sizes:{id}` - Product sizes
+
+### Setup Redis
+
+1. **Install Redis**:
+   ```bash
+   # macOS
+   brew install redis
+
+   # Ubuntu/Debian
+   sudo apt-get install redis-server
+
+   # Docker
+   docker run -d -p 6379:6379 redis:latest
+   ```
+
+2. **Update `.env`**:
+   ```dotenv
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   ```
+
+3. **Start Redis server**:
+   ```bash
+   # macOS / Ubuntu
+   redis-server
+
+   # Docker (if using container)
+   docker start <redis-container-id>
+   ```
+
+### Cached Endpoints
+
+The following product endpoints use caching:
+
+| Method | Endpoint                  | Cached |
+|--------|---------------------------|--------|
+| GET    | `/product`                | ✅ Yes |
+| GET    | `/product/:id`            | ✅ Yes |
+| GET    | `/product/:id/variants`   | ✅ Yes |
+| GET    | `/product/:id/sizes`      | ✅ Yes |
+| POST   | `/product`                | ❌ Invalidates cache |
+| PUT    | `/product/:id`            | ❌ Invalidates cache |
+| DELETE | `/product/:id`            | ❌ Invalidates cache |
 
 ---
 
