@@ -34,7 +34,7 @@ export async function createMaster(req, res) {
     res.status(201).json({
       success: true,
       message: `${table} created successfully`,
-      data: result,
+      results: result,
     });
   } catch (error) {
     res.status(error.status || 500).json({
@@ -59,7 +59,7 @@ export async function getAllMaster(req, res) {
 
     res.status(200).json({
       success: true,
-      data: result,
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -91,7 +91,8 @@ export async function getMasterById(req, res) {
 
     res.status(200).json({
       success: true,
-      data: result,
+      message: `${table} retrieved successfully`,
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -128,7 +129,7 @@ export async function updateMaster(req, res) {
     res.status(200).json({
       success: true,
       message: `${table} updated successfully`,
-      data: result,
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -161,7 +162,7 @@ export async function deleteMaster(req, res) {
     res.status(200).json({
       success: true,
       message: `${table} deleted successfully`,
-      data: result,
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
