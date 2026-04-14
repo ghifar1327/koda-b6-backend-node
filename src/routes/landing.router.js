@@ -43,7 +43,7 @@ landingRouter.get("/reviews/:id", landingController.getReviewProductById);
 
 /**
  * @swagger
- * /landing/recommended:
+ * /landing/recommended-product:
  *   get:
  *     summary: Get all recommended products
  *     tags: [Landing]
@@ -57,11 +57,11 @@ landingRouter.get("/reviews/:id", landingController.getReviewProductById);
  *               items:
  *                 type: object
  */
-landingRouter.get("/recommended", landingController.getRecommendedProducts);
+landingRouter.get("/recommended-product", landingController.getRecommendedProducts);
 
 /**
  * @swagger
- * /landing/recommended/{id}:
+ * /landing/recommended-product/{id}:
  *   get:
  *     summary: Get recommended product by ID
  *     tags: [Landing]
@@ -77,6 +77,6 @@ landingRouter.get("/recommended", landingController.getRecommendedProducts);
  *       404:
  *         description: Product not found
  */
-landingRouter.get("/recommended/:id", landingController.getRecommendedProductById);
+landingRouter.get("/recommended-product/:id", landingController.getRecommendedProductById);
 
 export default landingRouter;
