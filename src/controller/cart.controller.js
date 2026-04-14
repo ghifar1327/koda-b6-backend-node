@@ -50,7 +50,7 @@ export async function addToCart(req, res) {
     res.status(200).json({
       success: true,
       message: "Cart updated",
-      data: result,
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -73,7 +73,7 @@ export async function getCartByIdUser(req, res) {
 
     res.status(200).json({
       success: true,
-      data: result,
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -105,7 +105,7 @@ export async function updateCart(req, res) {
     res.status(200).json({
       success: true,
       message: "Cart updated",
-      data: result,
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -136,6 +136,7 @@ export async function deleteCart(req, res) {
     res.status(200).json({
       success: true,
       message: "Cart deleted",
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
