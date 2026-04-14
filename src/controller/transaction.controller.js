@@ -1,4 +1,5 @@
 
+import { Result } from "pg";
 import {getCartByIdUser} from "../models/cart.models.js";
 import * as transactionModels from "../models/transaction.models.js"; 
 import { json } from "stream/consumers";
@@ -11,8 +12,8 @@ import { json } from "stream/consumers";
 
 export async function createTansaction(req, res) {
     try{
-        let data = req.body;
-        const items = await getCartByIdUser(data.user_id);
+        let results = req.body;
+        const items = await getCartByIdUser(results.user_id);
         if (!items || items.length <= 0){
             res.status(400).json({
                 success: false,
@@ -21,9 +22,9 @@ export async function createTansaction(req, res) {
             return ;
         }
 
-        data = {...data, items};
+        results = {...results, items};
 
-        const transactionId = await transactionModels.createTransaction(data);
+        const transactionId = await transactionModels.createTransaction(results);
         if(!transactionId){
             res.status(400).json({
                 success: false,
@@ -57,7 +58,7 @@ export async function getAllTransactions(req, res) {
     return res.status(200).json({
       success: true,
       message: "Transactions retrieved successfully",
-      data: transactions,
+      results: transactions,
     });
   } catch (err) {
     console.error(err);
@@ -87,7 +88,7 @@ export async function getTransactionById(req, res) {
     return res.status(200).json({
       success: true,
       message: "Transaction retrieved successfully",
-      data: transaction,
+      results: transaction,
     });
   } catch (err) {
     console.error(err);
@@ -158,7 +159,7 @@ export async function getTransactionsByUserId(req, res) {
     return res.status(200).json({
       success: true,
       message: "User transactions retrieved successfully",
-      data: transactions,
+      results: transactions,
     });
   } catch (err) {
     console.error(err);
