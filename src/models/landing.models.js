@@ -8,7 +8,7 @@ export async function getAllReviewProductsLanding() {
     SELECT 
       p.id,
       p.name,
-      i.url AS images,
+      i.url AS image,
       p.description,
       p.price,
       COUNT(rp.id) AS total_review
@@ -59,7 +59,7 @@ export async function getRecommendedProducts() {
     SELECT 
       p.id,
       p.name,
-      i.url AS images,
+      i.url AS image,
       p.description,
       p.price,
       COUNT(rp.id) AS total_review,
@@ -87,7 +87,7 @@ export async function getRecommendedProductById(id) {
     SELECT 
       p.id,
       p.name,
-      i.url AS images,
+      i.url AS image,
       p.description,
       p.price,
       COUNT(DISTINCT rp.id) AS total_review,
