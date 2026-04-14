@@ -3,6 +3,7 @@ const cors = (req, res, next) => {
   const allowedOrigins = JSON.parse(process.env.CORS_ORIGINS || "[]");
   const origin = req.headers.origin;
 
+  console.log({origin: req.headers.origin, allowedOrigins});
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
