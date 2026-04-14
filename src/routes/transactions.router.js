@@ -28,7 +28,7 @@ const transactionRouter = express.Router();
  *       400:
  *         description: Bad request
  */
-transactionRouter.post("/", transactionController.createTansaction);
+transactionRouter.post("", transactionController.createTansaction);
 
 /**
  * @swagger
