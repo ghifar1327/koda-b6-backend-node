@@ -19,7 +19,7 @@ export async function getAllProducts(req, res) {
     res.status(200).json({
       success: true,
       message: "Products fetched successfully",
-      data: products,
+      results: products,
     });
   } catch (error) {
     console.error(error);
@@ -56,7 +56,7 @@ export async function getProductById(req, res) {
     res.status(200).json({
       success: true,
       message: "Product fetched successfully",
-      data: product,
+      results: product,
     });
   } catch (error) {
     console.error(error);
@@ -77,7 +77,7 @@ export async function createProduct(req, res) {
     res.status(201).json({
       success: true,
       message: "Product created successfully",
-      data: product,
+      results: product,
     });
   } catch (error) {
     console.error(error);
@@ -110,7 +110,7 @@ export async function updateProduct(req, res) {
     res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      data: product,
+      results: product,
     });
   } catch (error) {
     console.error(error);
@@ -143,7 +143,7 @@ export async function deleteProduct(req, res) {
     res.status(200).json({
       success: true,
       message: "Product deleted successfully",
-      data: product,
+      results: product,
     });
   } catch (error) {
     console.error(error);
@@ -170,7 +170,7 @@ export async function getVariantsByProductId(req, res) {
     res.status(200).json({
       success: true,
       message: "Variants fetched successfully",
-      data: variants,
+      results: variants,
     });
   } catch (error) {
     console.error(error);
@@ -197,7 +197,7 @@ export async function getSizesByProductId(req, res) {
     res.status(200).json({
       success: true,
       message: "Sizes fetched successfully",
-      data: sizes,
+      results: sizes,
     });
   } catch (error) {
     console.error(error);
