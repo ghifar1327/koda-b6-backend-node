@@ -1,8 +1,6 @@
 
-import { Result } from "pg";
 import {getCartByIdUser} from "../models/cart.models.js";
 import * as transactionModels from "../models/transaction.models.js"; 
-import { json } from "stream/consumers";
 
 
 /**
@@ -13,24 +11,10 @@ import { json } from "stream/consumers";
 export async function createTansaction(req, res) {
     try{
         let results = req.body;
-        const items = await getCartByIdUser(results.user_id);
-        if (!items || items.length <= 0){
-            res.status(400).json({
-                success: false,
-                message: "cart is empty"
-            });
-            return ;
-        }
-
-        results = {...results, items};
 
         const transactionId = await transactionModels.createTransaction(results);
         if(!transactionId){
-            res.status(400).json({
-                success: false,
-                message: "cart is empty"
-            });
-            return ;
+            throw new Error("Failed to create transaction");
         } 
         
         return res.status(201).json({
@@ -40,7 +24,7 @@ export async function createTansaction(req, res) {
           });
 
     }catch(err){
-        res.status(500),json({
+        res.status(500).json({
             success : false,
             message: err.message
         });
