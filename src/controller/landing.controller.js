@@ -9,9 +9,13 @@ export async function getAllReviewProducts(req, res) {
   try {
     const result = await landingModel.getAllReviewProductsLanding();
 
+    if (!result) {
+      throw new Error("Failed to retrieve review products");
+    }
     res.status(200).json({
       success: true,
-      data: result,
+      message: "Review products retrieved successfully",
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -33,15 +37,12 @@ export async function getReviewProductById(req, res) {
     const result = await landingModel.getReviewProductLandingById(id);
 
     if (!result) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
+      throw new Error("Failed to retrieve review product");
     }
-
     res.status(200).json({
       success: true,
-      data: result,
+      message: "Review product retrieved successfully",
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -60,9 +61,13 @@ export async function getRecommendedProducts(req, res) {
   try {
     const result = await landingModel.getRecommendedProducts();
 
+    if (!result) {
+      throw new Error("Failed to retrieve recommended products");
+    }
     res.status(200).json({
       success: true,
-      data: result,
+      message: "Recommended products retrieved successfully",
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
@@ -83,16 +88,14 @@ export async function getRecommendedProductById(req, res) {
 
     const result = await landingModel.getRecommendedProductById(id);
 
-    if (!result) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
+     if (!result) {
+      throw new Error("Failed to retrieve recommended products");
     }
 
     res.status(200).json({
       success: true,
-      data: result,
+      message: "Recommended product retrieved successfully",
+      results: result,
     });
   } catch (error) {
     res.status(500).json({
