@@ -13,6 +13,7 @@ import productRouter from "./routes/product.router.js";
 import transactionRouter from "./routes/transactions.router.js";
 import usersRouter from "./routes/users.router.js";
 import auth from "./middleware/auth.middleware.js";
+import cors from "./middleware/cors.meddleware.js";
 
 export const conn = db();
 const app = express();
@@ -28,7 +29,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:9999",
+        url: `http://localhost:${process.env.PORT}`,
       },
     ],
   },
@@ -38,6 +39,7 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use(express.json());
+app.use(cors);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -45,11 +47,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use("/admin", auth, adminRouter);
 app.use("/auth", authRouter);
-app.use("/cart", cartRouter);
+app.use("/cart", auth, cartRouter);
 app.use("/landing", landingRouter);
 app.use("/master", masterRouter);
 app.use("/product", productRouter);
-app.use("/transactions", transactionRouter);
+app.use("/transactions", auth, transactionRouter);
 app.use("/users", usersRouter);
 
 app.get("/", function(req, res){
@@ -59,10 +61,10 @@ app.get("/", function(req, res){
     });
 });
 
-app.listen(9999, async function(){
-    console.log("App listening on port 9999");
-    console.log("Swagger docs available at http://localhost:9999/api-docs");
-    
+app.listen(process.env.PORT, async function(){
+    console.log(`App listening on port ${process.env.PORT}`);
+    console.log(`Swagger docs available at http://localhost:${process.env.PORT}/api-docs`);
+
     // Initialize Redis
     try {
         await initRedis();
