@@ -3,6 +3,7 @@ import * as authModels from "../models/auth.models.js";
 import {constants} from "node:http2";
 import { GenerateToken } from "../lib/jwt.js";
 import { GenerateHash, VerifyHash } from "../lib/hash.js";
+import buildImageURL from "../lib/buildImageUrl.js";
 
 /**
  * @param {import("express").Request} req
@@ -99,12 +100,22 @@ export async function login(req, res) {
     //      email: user.email
          
     //    };
+        user.picture = buildImageURL(req, user.picture);
        res.status(constants.HTTP_STATUS_OK).json({
          success: true,
          message: "Login success",
+         user: {
+           id: user.id,
+           picture: user.picture,
+           full_name: user.full_name,
+           email: user.email,
+           address: user.address,
+           phone: user.phone,
+           role_id: user.role_id
+         },
          token
-    });
-
+        });
+        
 
     }catch(err){
       res.status(500).json({
