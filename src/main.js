@@ -50,7 +50,7 @@ app.use("/auth", authRouter);
 app.use("/cart", auth, cartRouter);
 app.use("/landing", landingRouter);
 app.use("/master", masterRouter);
-app.use("/product", productRouter);
+app.use("/products", productRouter);
 app.use("/transactions", auth, transactionRouter);
 app.use("/users", usersRouter);
 
