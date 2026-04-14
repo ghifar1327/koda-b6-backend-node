@@ -14,9 +14,15 @@ export async function createTransaction(data) {
 
     await client.query(
       `INSERT INTO transactions (
-        id, user_id, address, status,
-        id_method, payment_method, id_voucher,
-        created_at, updated_at
+        id, 
+        user_id, 
+        address, 
+        status,
+        id_method, 
+        payment_method, 
+        id_voucher,
+        created_at, 
+        updated_at
       ) VALUES ($1,$2,$3,$4,$5,$6,$7,NOW(),NOW())`,
       [
         transactionId,
@@ -28,18 +34,27 @@ export async function createTransaction(data) {
         data.id_voucher,
       ]
     );
+    const cartItems = await client.query(
+      `SELECT 
+          id,
+          product_id, 
+          size_id,
+          variant_id,
+          quantity
+        FROM cart WHERE user_id = $1`, [data.user_id]);
 
-    for (const item of data.items) {
+
+    for (const cartItem of cartItems.rows) {
       await client.query(
         `INSERT INTO transaction_details(
           transaction_id, product_id, size_id, variant_id, quantity
         ) VALUES ($1,$2,$3,$4,$5)`,
         [
           transactionId,
-          item.product_id,
-          item.size_id,
-          item.variant_id,
-          item.quantity,
+          cartItem.product_id,
+          cartItem.size_id,
+          cartItem.variant_id,
+          cartItem.quantity,
         ]
       );
 
@@ -47,7 +62,7 @@ export async function createTransaction(data) {
         `UPDATE products
          SET stock = stock - $1
          WHERE id = $2 AND stock >= $1`,
-        [item.quantity, item.product_id]
+        [cartItem.quantity, cartItem.product_id]
       );
 
       if (result.rowCount === 0) {
@@ -56,18 +71,18 @@ export async function createTransaction(data) {
       
     }
 
-    await client.query("COMMIT");
-
+    
     // DETELE CART
-    for (const item of data.items) {
-      if (item.id) {
+    for (const cartItem of cartItems.rows) {
+      if (cartItem.id) {
         await client.query(
           `DELETE FROM cart WHERE id = $1`,
-          [item.id]
+          [cartItem.id]
         );
       }
     }
-
+    
+    await client.query("COMMIT");
     return transactionId;
   } catch (err) {
     await client.query("ROLLBACK");
