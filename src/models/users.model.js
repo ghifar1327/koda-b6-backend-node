@@ -131,7 +131,7 @@ export async function createUser(data) {
       const roleId = roleResult.rows[0].id;
       
       // update user
-      const result = await client.query(
+      const updateResult = await client.query(
       `UPDATE users 
         SET 
           picture=$1, 
@@ -143,7 +143,7 @@ export async function createUser(data) {
           role_id=$7,
           updated_at=$8 
         WHERE id=$9
-        RETURNING id, full_name, email, updated_at`,
+        RETURNING id`,
       [
         data.picture, 
         data.full_name, 
@@ -156,6 +156,29 @@ export async function createUser(data) {
         id
       ]
     );
+
+    if (updateResult.rowCount === 0) {
+      throw new Error("Failed to update user");
+    }
+
+    const result = await client.query(
+      `SELECT 
+          u.id, 
+          u.full_name, 
+          u.picture, 
+          u.email,
+          u.password,
+          r.name as role, 
+          u.phone, 
+          u.address, 
+          u.created_at, 
+          u.updated_at
+        FROM users u
+        JOIN role r ON u.role_id = r.id
+        WHERE u.id = $1`,
+      [id]
+    );
+    await client.query("COMMIT");
     return result.rows[0];
   }catch (err) {
     await client.query("ROLLBACK");
