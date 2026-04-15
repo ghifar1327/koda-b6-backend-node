@@ -3,17 +3,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function getUserByid(id){
     const result = await pool.query(`
-     SELECT 
-    			id, 
-    			full_name, 
-    			picture, 
-    			email,
-    			password,
-    			role_id, 
-    			phone, 
-    			address, 
-    			created_at, 
-    			updated_at FROM users WHERE id = $1`,
+         SELECT 
+     	   		u.id, 
+     	   		u.full_name, 
+     	   		u.picture, 
+     	   		u.email,
+     	   		u.password,
+     	   		r.name as role, 
+     	   		u.phone, 
+     	   		u.address, 
+     	   		u.created_at, 
+     	   		u.updated_at FROM users u
+             JOIN roles r ON u.role_id = r.id
+          WHERE id = $1`,
          [id]
      );
     return result.rows[0];
@@ -21,17 +23,19 @@ export async function getUserByid(id){
 
 export async function getuserbyEmail(email){
     const result = await pool.query(`
-      SELECT 
-     			id, 
-     			full_name, 
-     			picture, 
-     			email,
-     			password,
-     			role_id, 
-     			phone, 
-     			address, 
-     			created_at, 
-     			updated_at FROM users WHERE email = $1;`,
+         SELECT 
+     	   		u.id, 
+     	   		u.full_name, 
+     	   		u.picture, 
+     	   		u.email,
+     	   		u.password,
+     	   		r.name as role, 
+     	   		u.phone, 
+     	   		u.address, 
+     	   		u.created_at, 
+     	   		u.updated_at FROM users u
+            JOIN roles r ON u.role_id = r.id 
+         WHERE email = $1;`,
         [email]
         );
     return result.rows[0];
@@ -40,16 +44,18 @@ export async function getuserbyEmail(email){
 export async function getAllUsers(){
     const {rows:data} = await pool.query(`
      SELECT 
-    			id, 
-    			full_name, 
-    			picture, 
-    			email,
-    			password,
-    			role_id, 
-    			phone, 
-    			address, 
-    			created_at, 
-    			updated_at FROM users`
+    			u.id, 
+    			u.full_name, 
+    			u.picture, 
+    			u.email,
+    			u.password,
+    			r.name as role, 
+    			u.phone, 
+    			u.address, 
+    			u.created_at, 
+    			u.updated_at FROM users u
+          JOIN roles r ON u.role_id = r.id
+          ORDER BY created_at DESC`
         );
   return data;
 }
@@ -108,7 +114,25 @@ export async function createUser(data) {
 }
 
   export async function updateUser(id, data){
-      const result = await pool.query(
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      // get role_id
+      const roleResult = await client.query(
+        `SELECT id FROM roles WHERE name = $1`,
+        [data.role]
+      );
+
+      if (roleResult.rows.length === 0) {
+        throw new Error(`Role '${data.role}' not found`);
+      }
+
+      const roleId = roleResult.rows[0].id;
+      
+      // update user
+      const result = await client.query(
       `UPDATE users 
         SET 
           picture=$1, 
@@ -121,10 +145,26 @@ export async function createUser(data) {
           updated_at=$8 
         WHERE id=$9
         RETURNING id, full_name, email, updated_at`,
-      [data.picture, data.full_name, data.email, data.password, data.address, data.phone, data.role_id, new Date(), id]
+      [
+        data.picture, 
+        data.full_name, 
+        data.email, 
+        data.password, 
+        data.address, 
+        data.phone, 
+        roleId, 
+        new Date(), 
+        id
+      ]
     );
     return result.rows[0];
+  }catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
+}
 
 
 export async function deleteUser(id){
