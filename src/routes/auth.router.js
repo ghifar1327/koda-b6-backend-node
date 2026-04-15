@@ -1,8 +1,8 @@
 import { Router } from "express";
 import * as authController from "../controller/auth.controller.js";
+import * as userController from "../controller/user.controller.js";
 import upload from "../middleware/upload.middlewara.js";
 import auth from "../middleware/auth.middleware.js";
-import { updateUser } from "../models/users.model.js";
 
 const authRouter = Router();
 
@@ -135,7 +135,7 @@ authRouter.post("/reset-password", authController.resetPassword);
  *       404:
  *         description: User not found
  */
-authRouter.patch("/:id/update", auth, updateUser);
+authRouter.patch("/:id/update", auth, userController.updateUser);
 
 authRouter.patch("/:id/picture", upload.single("picture"), auth, authController.uploadPicture);
 
