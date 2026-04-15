@@ -38,6 +38,8 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.text({ type: "text/plain" }));
 app.use(cors);
 app.use("/uploads", express.static("uploads")); // Serve static files from uploads directory
 
