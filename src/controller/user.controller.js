@@ -1,3 +1,4 @@
+import buildImageURL from "../lib/buildImageUrl.js";
 import { GenerateHash } from "../lib/hash.js";
 import * as  userModels from "../models/users.model.js";
 import {constants} from "http2";
@@ -74,7 +75,25 @@ export async function getUserById(req, res) {
 export async function updateUser(req, res) {
   try {
     const id = req.params.id;
-    const data = req.body;
+    let data = req.body ?? {};
+
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid request body",
+        });
+      }
+    }
+
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No update data provided",
+      });
+    }
 
     // get previous data user by id
     const existing = await userModels.getUserByid(id);
@@ -82,28 +101,36 @@ export async function updateUser(req, res) {
       throw new Error("User not found");
     }
 
+    const password =
+      data.password !== undefined
+        ? await GenerateHash(data.password)
+        : existing.password;
+    
     // merge data with previous data
     const payload = {
       picture: data.picture ?? existing.picture,
-      full_name: data.full_name ?? existing.full_name,
+      full_name: data.full_name ?? data.name ?? existing.full_name,
       email: data.email ?? existing.email,
-      password: data.password ?? existing.password,
+      password,
       address: data.address ?? existing.address,
       phone: data.phone ?? existing.phone,
       role: data.role ?? existing.role,
     };
 
-    const user = await userModels.updateUser(id, payload);
-    if (!user) {
+    const updated = await userModels.updateUser(id, payload);
+    if (!updated) {
       throw new Error("Failed to update user");
     }
 
+    const user = await userModels.getUserByid(id);
+    user.picture = buildImageURL(req, user.picture);
     res.status(200).json({
       success: true,
       message: "User updated successfully",
       results: user,
     });
   } catch (err) {
+    console.log(err);
     res.status(404).json({
       success: false,
       message: err.message,
