@@ -54,16 +54,57 @@ export async function getAllUsers(){
   return data;
 }
 
-export async function createUser(data){
-  const id = uuidv4();
-  const result = await pool.query(`
-    INSERT INTO users 
-    (id, full_name, email, password, address, phone, role_id,created_at) 
-    VALUES 
-    ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [id, data.full_name, data.email, data.password, data.address, data.phone, data.role_id, new Date()]
-  );
-  return result.rows[0];
+export async function createUser(data) {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const id = uuidv4();
+
+    // get role_id
+    const roleResult = await client.query(
+      `SELECT id FROM roles WHERE name = $1`,
+      [data.role]
+    );
+
+    if (roleResult.rows.length === 0) {
+      throw new Error(`Role '${data.role}' not found`);
+    }
+
+    const roleId = roleResult.rows[0].id;
+
+    // insert new user
+    const result = await client.query(
+      `
+      INSERT INTO users 
+      (id, full_name, email, password, address, phone, role_id, created_at) 
+      VALUES 
+      ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id, full_name, email, role_id, created_at
+      `,
+      [
+        id,
+        data.full_name,
+        data.email,
+        data.password,
+        data.address,
+        data.phone,
+        roleId,
+        new Date(),
+      ]
+    );
+
+    await client.query("COMMIT");
+
+    return result.rows;
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
   export async function updateUser(id, data){
