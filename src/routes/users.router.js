@@ -68,36 +68,6 @@ userRouter.get("", userController.getAllUser);
  */
 userRouter.get("/:id", userController.getUserById);
 
-/**
- * @swagger
- * /users/{id}:
- *   patch:
- *     summary: Update user
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *     responses:
- *       200:
- *         description: User updated
- *       404:
- *         description: User not found
- */
-userRouter.patch("/:id", userController.updateUser);
 
 /**
  * @swagger
