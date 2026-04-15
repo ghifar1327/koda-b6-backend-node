@@ -8,7 +8,7 @@ export async function initRedis() {
   }
 
   redisClient = createClient({
-  url: `redis://${process.env.REDIS_HOST || "localhost"}:${process.env.REDIS_PORT || 6379}`
+  url: `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
   });
 
   redisClient.on("error", (err) => {
