@@ -1,5 +1,8 @@
 import { Router } from "express";
 import * as authController from "../controller/auth.controller.js";
+import upload from "../middleware/upload.middlewara.js";
+import auth from "../middleware/auth.middleware.js";
+import { updateUser } from "../models/users.model.js";
 
 const authRouter = Router();
 
@@ -102,5 +105,39 @@ authRouter.post("/forgot-password", authController.forgotPwd);
  *         description: Invalid token
  */
 authRouter.post("/reset-password", authController.resetPassword);
+
+/**
+ * @swagger
+ * /auth/{id}/update:
+ *   patch:
+ *     summary: Update user
+ *     tags: [auth]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User updated
+ *       404:
+ *         description: User not found
+ */
+authRouter.patch("/:id/update", auth, updateUser);
+
+authRouter.patch("/:id/picture", upload.single("picture"), auth, authController.uploadPicture);
+
 
 export default authRouter;
