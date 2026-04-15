@@ -4,6 +4,8 @@ import {constants} from "node:http2";
 import { GenerateToken } from "../lib/jwt.js";
 import { GenerateHash, VerifyHash } from "../lib/hash.js";
 import buildImageURL from "../lib/buildImageUrl.js";
+import { validate as isUUID } from "uuid";
+
 
 /**
  * @param {import("express").Request} req
@@ -193,3 +195,42 @@ export async function resetPassword(req, res) {
         });
     }
 }
+
+
+export const uploadPicture = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!isUUID(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user id",
+      });
+    }
+
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Picture is required",
+      });
+    }
+
+    const picture = "/uploads/" + req.file.filename;
+
+    const user = await authModels.updateUserPicture(id, picture);
+
+    user.picture = buildImageURL(req, user.picture);
+    return res.json({
+      success: true,
+      message: "Picture updated successfully",
+      user: user,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
