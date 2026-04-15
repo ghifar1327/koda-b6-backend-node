@@ -14,11 +14,10 @@ export async function getUserByid(id){
      	   		u.address, 
      	   		u.created_at, 
      	   		u.updated_at FROM users u
-             JOIN role r ON u.role_id = r.id
-          WHERE id = $1`,
+            JOIN role r ON u.role_id = r.id
+          WHERE u.id = $1`,
          [id]
-     );
-    return result.rows[0];
+     );    return result.rows[0];
 }
 
 export async function getuserbyEmail(email){
