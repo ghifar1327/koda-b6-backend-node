@@ -42,7 +42,7 @@ export async function register(req, res) {
       password: hash,
       address,
       phone,
-      role_id: 2
+      role: "user"
     };
 
     const user = await userModels.createUser(reqData);
