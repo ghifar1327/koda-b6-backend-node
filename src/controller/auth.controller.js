@@ -93,14 +93,9 @@ export async function login(req, res) {
               message: "Invalid email or password"
             });
           }
-        const token = GenerateToken(user);
-
-    //    const result = {
-    //      name: user.name,
-    //      email: user.email
-         
-    //    };
-        user.picture = buildImageURL(req, user.picture);
+      const token = await GenerateToken(user);
+      
+      user.picture = buildImageURL(req, user.picture);
        res.status(constants.HTTP_STATUS_OK).json({
          success: true,
          message: "Login success",
@@ -111,7 +106,7 @@ export async function login(req, res) {
            email: user.email,
            address: user.address,
            phone: user.phone,
-           role_id: user.role_id
+           role: user.role
          },
          token
         });
