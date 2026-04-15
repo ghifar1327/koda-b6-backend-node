@@ -97,7 +97,7 @@ userRouter.get("/:id", userController.getUserById);
  *       404:
  *         description: User not found
  */
-userRouter.patch("/:id", userController.UpdateUser);
+userRouter.patch("/:id", userController.updateUser);
 
 /**
  * @swagger
