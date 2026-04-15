@@ -1,43 +1,33 @@
 # koda-b6-backend-node
 
-REST API backend built with **Express.js** and **PostgreSQL**.
-
----
+REST API backend for the coffee shop project, built with Express.js, PostgreSQL, JWT auth, file upload, and Redis caching.
 
 ## Tech Stack
 
-- **Runtime**: Node.js (ESM / `"type": "module"`)
-- **Framework**: Express.js v5
-- **Database**: PostgreSQL (`pg`)
-- **Linter**: ESLint
-
----
+- Node.js
+- Express.js
+- PostgreSQL with `pg`
+- Redis
+- JWT
+- Multer
+- Swagger
 
 ## Project Structure
 
-```
+```text
 src/
 ├── controller/
-│   ├── auth.controller.js
-│   └── users.controller.js
 ├── lib/
-│   └── db.js
-├── model/
-│   ├── auth.model.js
-│   └── users.model.js
-├── router/
-│   ├── admin.router.js
-│   ├── auth.router.js
-│   └── users.router.js
-├── app.js
-└── main.js
+├── middleware/
+├── models/
+├── routes/
+├── main.js
+└── ...
 ```
-
----
 
 ## Getting Started
 
-### 1. Clone the repository
+### 1. Clone repository
 
 ```bash
 git clone https://github.com/ghifar1327/koda-b6-backend-node.git
@@ -52,131 +42,121 @@ npm install
 
 ### 3. Setup environment variables
 
-Copy `.env.example` to `.env` and fill in the values:
+Copy `.env.example` to `.env`:
 
 ```bash
 cp .env.example .env
 ```
 
+Example:
+
 ```dotenv
-PORT=
+PORT=8888
 
-DB_HOST=
-DB_PORT=
-DB_USERNAME=
-DB_PASSWORD=
-DB_NAME=
-DB_SSLMODE=
+DATABASE_URL=postgres://username:password@localhost:5432/database_name?sslmode=disable
 
-# Redis Configuration (Optional, for product caching)
+SECRET_KEY=your_secret_key_here
+
 REDIS_HOST=localhost
 REDIS_PORT=6379
-```
+REDIS_PASSWORD=your_redis_password_here
 
-| Variable      | Description                          |
-|---------------|--------------------------------------|
-| `PORT`        | Port the server will run on          |
-| `DB_HOST`     | PostgreSQL host                      |
-| `DB_PORT`     | PostgreSQL port (default: `5432`)    |
-| `DB_USERNAME` | PostgreSQL username                  |
-| `DB_PASSWORD` | PostgreSQL password                  |
-| `DB_NAME`     | PostgreSQL database name             |
-| `DB_SSLMODE`  | SSL mode (`disable` / `require`)     |
-| `REDIS_HOST`  | Redis server host (default: `localhost`) |
-| `REDIS_PORT`  | Redis server port (default: `6379`)  |
+CORS_ORIGINS=["http://localhost:5173"]
+```
 
 ### 4. Run the server
 
 ```bash
-# Development (with watch mode)
 npm run dev
+```
 
-# Production
+For production:
+
+```bash
 npm start
 ```
 
----
+## Available Scripts
 
-## Scripts
+| Command | Description |
+|---|---|
+| `npm run dev` | Run server with watch mode |
+| `npm start` | Run server normally |
+| `npm run lint` | Run ESLint |
+| `npm run lint:fix` | Fix lint issues automatically |
 
-| Command        | Description                        |
-|----------------|------------------------------------|
-| `npm run dev`  | Run with watch mode (auto-restart) |
-| `npm start`    | Run in production mode             |
-| `npm run lint` | Lint source files                  |
-| `npm run lint:fix` | Auto-fix lint issues           |
+## Environment Variables
 
----
+| Variable | Description |
+|---|---|
+| `PORT` | Port used by the Express server |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `SECRET_KEY` | Secret key for JWT token signing |
+| `REDIS_HOST` | Redis host |
+| `REDIS_PORT` | Redis port |
+| `REDIS_PASSWORD` | Redis password |
+| `CORS_ORIGINS` | Allowed origins for CORS, stored as JSON array string |
 
-## API Routes
+## API Documentation
 
-| Prefix    | Router File          | Description       |
-|-----------|----------------------|-------------------|
-| `/auth`   | `auth.router.js`     | Authentication    |
-| `/users`  | `users.router.js`    | User management   |
-| `/admin`  | `admin.router.js`    | Admin operations  |
+Swagger UI is available after the server starts:
 
----
+```text
+http://localhost:PORT/api-docs
+```
 
-## Caching (Redis)
+Example:
 
-Redis caching is implemented for the **Product** endpoints to improve performance.
+```text
+http://localhost:8888/api-docs
+```
 
-### Features
+## Main Route Prefixes
 
-- **Automatic caching** of product queries with 1-hour TTL (Time To Live)
-- **Cache invalidation** on CREATE, UPDATE, and DELETE operations
-- **Fallback mode**: Application continues to work without Redis if it's unavailable
-- **Cache keys**:
-  - `products:all` - All products list
-  - `product:{id}` - Individual product
-  - `product:variants:{id}` - Product variants
-  - `product:sizes:{id}` - Product sizes
+| Prefix | Description |
+|---|---|
+| `/auth` | Authentication, profile update, forgot/reset password |
+| `/admin` | Admin endpoints |
+| `/cart` | Cart endpoints |
+| `/landing` | Landing page endpoints |
+| `/master` | Master data endpoints |
+| `/products` | Product endpoints |
+| `/transactions` | Transaction endpoints |
 
-### Setup Redis
+## Notes
 
-1. **Install Redis**:
-   ```bash
-   # macOS
-   brew install redis
+- Static uploaded files are served from `/uploads`
+- `PATCH /auth/:id/update` supports partial update behavior
+- Profile update can accept standard JSON requests
+- The backend also handles text body requests for profile update when the frontend sends serialized JSON as `text/plain`
+- Redis is optional; if Redis connection fails, the application still runs without caching
 
-   # Ubuntu/Debian
-   sudo apt-get install redis-server
+## Example Profile Update Request
 
-   # Docker
-   docker run -d -p 6379:6379 redis:latest
-   ```
+```http
+PATCH /auth/:id/update
+Authorization: Bearer <token>
+Content-Type: application/json
+```
 
-2. **Update `.env`**:
-   ```dotenv
-   REDIS_HOST=localhost
-   REDIS_PORT=6379
-   ```
+```json
+{
+  "full_name": "Ghifar",
+  "email": "ghifar@example.com",
+  "phone": "08123456789",
+  "address": "Jakarta"
+}
+```
 
-3. **Start Redis server**:
-   ```bash
-   # macOS / Ubuntu
-   redis-server
+## Redis Caching
 
-   # Docker (if using container)
-   docker start <redis-container-id>
-   ```
+Redis is used for product caching to improve read performance.
 
-### Cached Endpoints
+Features:
 
-The following product endpoints use caching:
-
-| Method | Endpoint                  | Cached |
-|--------|---------------------------|--------|
-| GET    | `/product`                | ✅ Yes |
-| GET    | `/product/:id`            | ✅ Yes |
-| GET    | `/product/:id/variants`   | ✅ Yes |
-| GET    | `/product/:id/sizes`      | ✅ Yes |
-| POST   | `/product`                | ❌ Invalidates cache |
-| PUT    | `/product/:id`            | ❌ Invalidates cache |
-| DELETE | `/product/:id`            | ❌ Invalidates cache |
-
----
+- Cache for product list and detail endpoints
+- Cache invalidation on data changes
+- Safe fallback when Redis is unavailable
 
 ## License
 
