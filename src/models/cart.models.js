@@ -81,7 +81,7 @@ export async function getCartByIdUser(user_id) {
     LEFT JOIN product_images pi ON p.id = pi.product_id
     LEFT JOIN images i ON pi.image_id = i.id
     WHERE c.user_id = $1
-    ORDER BY id ASC
+    ORDER BY c.id ASC
   `;
 
   const result = await pool.query(query, [user_id]);
@@ -89,17 +89,68 @@ export async function getCartByIdUser(user_id) {
   return result.rows;
 }
 
+
+
 /**
  * @param {number} id
+ * @returns {Promise<Array>}
  */
 export async function deleteCart(id) {
-  const query = `
-    DELETE FROM cart
-    WHERE id = $1
-    RETURNING id
-  `;
+  const client = await pool.connect();
 
-  const result = await pool.query(query, [id]);
+  try {
+    await client.query("BEGIN");
 
-  return result.rows[0] || null;
+    // get user_id
+    const userResult = await client.query(
+      `SELECT user_id FROM cart WHERE id = $1`,
+      [id]
+    );
+
+    if (userResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const userId = userResult.rows[0].user_id;
+
+    // delete cart
+    await client.query(
+      `DELETE FROM cart WHERE id = $1`,
+      [id]
+    );
+
+    await client.query("COMMIT");
+
+    // Fetch updated cart after deletion
+    const cartResult = await pool.query(
+      `
+      SELECT 
+        c.id,
+        i.url AS product_image,
+        p.name AS product_name,
+        s.name AS size,
+        v.name AS variant,
+        c.quantity,
+        ((p.price + COALESCE(s.add_price, 0) + COALESCE(v.add_price, 0)) * c.quantity) AS subtotal
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      LEFT JOIN sizes s ON c.size_id = s.id
+      LEFT JOIN variants v ON c.variant_id = v.id
+      LEFT JOIN product_images pi ON p.id = pi.product_id
+      LEFT JOIN images i ON pi.image_id = i.id
+      WHERE c.user_id = $1
+      ORDER BY c.id ASC
+      `,
+      [userId]
+    );
+
+    return cartResult.rows;
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 }
