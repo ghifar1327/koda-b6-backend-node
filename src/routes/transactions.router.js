@@ -135,6 +135,6 @@ transactionRouter.delete("/:id", transactionController.deleteTransaction);
  *       404:
  *         description: User not found
  */
-transactionRouter.get("/:userId", transactionController.getTransactionsByUserId);
+transactionRouter.get("/user/:userId", transactionController.getTransactionsByUserId);
 
 export default transactionRouter;
