@@ -14,7 +14,7 @@ export async function getUserByid(id){
      	   		u.address, 
      	   		u.created_at, 
      	   		u.updated_at FROM users u
-             JOIN roles r ON u.role_id = r.id
+             JOIN role r ON u.role_id = r.id
           WHERE id = $1`,
          [id]
      );
@@ -34,7 +34,7 @@ export async function getuserbyEmail(email){
      	   		u.address, 
      	   		u.created_at, 
      	   		u.updated_at FROM users u
-            JOIN roles r ON u.role_id = r.id 
+            JOIN role r ON u.role_id = r.id 
          WHERE email = $1;`,
         [email]
         );
@@ -54,7 +54,7 @@ export async function getAllUsers(){
     			u.address, 
     			u.created_at, 
     			u.updated_at FROM users u
-          JOIN roles r ON u.role_id = r.id
+          JOIN role r ON u.role_id = r.id
           ORDER BY created_at DESC`
         );
   return data;
@@ -70,7 +70,7 @@ export async function createUser(data) {
 
     // get role_id
     const roleResult = await client.query(
-      `SELECT id FROM roles WHERE name = $1`,
+      `SELECT id FROM role WHERE name = $1`,
       [data.role]
     );
 
@@ -121,7 +121,7 @@ export async function createUser(data) {
 
       // get role_id
       const roleResult = await client.query(
-        `SELECT id FROM roles WHERE name = $1`,
+        `SELECT id FROM role WHERE name = $1`,
         [data.role]
       );
 
